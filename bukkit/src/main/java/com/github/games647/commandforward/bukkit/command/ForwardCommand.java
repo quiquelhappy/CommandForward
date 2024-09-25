@@ -44,6 +44,20 @@ public class ForwardCommand extends MessageCommand {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 sendForwardCommand(player, true, args[1], dropFirstArgs(args, ARG_START), sender.isOp());
             }
+        } else if (channelPlayer.toLowerCase().startsWith("console@")) {
+            if (!Permissions.FORWARD_CONSOLE.isSetOn(sender)) {
+                sendErrorMessage(sender, Permissions.ERROR_MESSAGE);
+                return true;
+            }
+
+            channelPlayer = channelPlayer.replace("console@", "");
+            Player messageSender = Bukkit.getServer().getPlayer(channelPlayer);
+            if (messageSender == null) {
+                sendErrorMessage(sender, "Player '" + channelPlayer + "' not found");
+                return true;
+            }
+
+            sendForwardCommand(messageSender, false, args[1], dropFirstArgs(args, ARG_START), sender.isOp());
         } else {
             if (sender instanceof Player && !sender.getName().equalsIgnoreCase(channelPlayer)
                     && !Permissions.FORWARD_OTHER.isSetOn(sender)) {
